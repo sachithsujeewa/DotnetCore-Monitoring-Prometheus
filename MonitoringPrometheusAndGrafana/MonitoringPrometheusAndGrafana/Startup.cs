@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using MonitoringPrometheusAndGrafana.Data;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace MonitoringPrometheusAndGrafana
 {
@@ -27,6 +28,8 @@ namespace MonitoringPrometheusAndGrafana
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<KestrelServerOptions>(o => o.AllowSynchronousIO = true);
+            services.AddMetrics();
             services.AddControllers();
 
             services.AddDbContext<MonitoringPrometheusAndGrafanaContext>(options =>
