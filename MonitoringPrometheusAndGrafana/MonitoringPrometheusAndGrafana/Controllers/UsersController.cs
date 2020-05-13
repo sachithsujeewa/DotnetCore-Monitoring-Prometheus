@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.Metrics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,9 +17,12 @@ namespace MonitoringPrometheusAndGrafana.Controllers
     {
         private readonly MonitoringPrometheusAndGrafanaContext _context;
 
-        public UsersController(MonitoringPrometheusAndGrafanaContext context)
+        private readonly IMetrics _metrics;
+
+        public UsersController(MonitoringPrometheusAndGrafanaContext context, IMetrics metrics)
         {
             _context = context;
+            _metrics = metrics;
         }
 
         // GET: api/Users
@@ -82,6 +86,7 @@ namespace MonitoringPrometheusAndGrafana.Controllers
         {
             _context.User.Add(user);
             await _context.SaveChangesAsync();
+            _metrics.Measure.Counter.Increment(MetricsRegistry.CreatedUserCounter);
 
             return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }
